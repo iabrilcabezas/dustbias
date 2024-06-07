@@ -1,0 +1,34 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  nside: 2048
+  config-name: act_dr6v4
+  mask-type: wide_v4_20220316
+  mask-subproduct: lensing_masks
+  apodfact: 3dg
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs
+
+stages:
+
+  stage_generate_fgs_pysm_d1:
+    exec: python
+    globals:
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+    options:
+      dust-type: pysm_d1
+      dust-freq: 95
+      skyfrac: GAL070
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:10:00'
+    script: mbatch/stage_generate_fgs.py
+  
+ 
