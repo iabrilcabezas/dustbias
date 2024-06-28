@@ -58,6 +58,8 @@ ucls = futils.get_theory_dicts(lmax=args.mlmax, grad=True)[0]
 foreground_alms = cs.map2alm(foreground_map, lmax=args.mlmax)
 foreground_cls = cs.alm2cl(foreground_alms) / w_n(mask, 2)
 
+np.save(output_path(f'cl_{odust_name}.npy'), foreground_cls)
+
 # Load the noise power spectrum and filter the alms
 noise_dict = np.load(output_path(f'../stage_filter/{get_noise_dict_name(args)}'), allow_pickle=True).item()
 Als = np.load(output_path(f'../stage_filter/{get_norm_name(args)}'), allow_pickle=True).item()

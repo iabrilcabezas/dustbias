@@ -11,12 +11,12 @@ globals:
   mask-subproduct: lensing_masks
   apodfact: 3dg
   mlmax: 4000
-  lmax: 3000
+  lmax: 3500
   lmin: 600
   filter-whiteamplitude: 12
   filter-whitefwhm: 1.4
   dust-freq: 95
-  skyfrac: GAL070
+  skyfrac: GAL040
 root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs
 
 stages:
@@ -57,59 +57,59 @@ stages:
       walltime: '00:05:00'
     script: mbatch/stage_generate_fgs.py
 
-  # stage_generate_fgs_pysm_d1:
-  #   exec: python
-  #   globals:
-  #     - nside
-  #     - config-name
-  #     - mask-type
-  #     - mask-subproduct
-  #     - apodfact
-  #     - dust-freq
-  #     - skyfrac
-  #   options:
-  #     dust-type: pysm_d1
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_generate_fgs.py
+  stage_generate_fgs_pysm_d1:
+    exec: python
+    globals:
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - dust-freq
+      - skyfrac
+    options:
+      dust-type: pysm_d1
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_generate_fgs.py
 
-  # stage_generate_fgs_pysm_d6:
-  #   exec: python
-  #   globals:
-  #     - nside
-  #     - config-name
-  #     - mask-type
-  #     - mask-subproduct
-  #     - apodfact
-  #     - dust-freq
-  #     - skyfrac
-  #   options:
-  #     dust-type: pysm_d6
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_generate_fgs.py
+  stage_generate_fgs_pysm_d6:
+    exec: python
+    globals:
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - dust-freq
+      - skyfrac
+    options:
+      dust-type: pysm_d6
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_generate_fgs.py
 
-  # stage_generate_fgs_pysm_d10:
-  #   exec: python
-  #   globals:
-  #     - nside
-  #     - config-name
-  #     - mask-type
-  #     - mask-subproduct
-  #     - apodfact
-  #     - dust-freq
-  #     - skyfrac
-  #   options:
-  #     dust-type: pysm_d10
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_generate_fgs.py
+  stage_generate_fgs_pysm_d10:
+    exec: python
+    globals:
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - dust-freq
+      - skyfrac
+    options:
+      dust-type: pysm_d10
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_generate_fgs.py
   
   stage_filter:
     exec: python
@@ -177,80 +177,80 @@ stages:
       walltime: '00:05:00'
     script: mbatch/stage_auto.py
 
-  # stage_auto_pysm_d1:
-  #   exec: python
-  #   globals:
-  #     - mlmax
-  #     - lmax
-  #     - lmin
-  #     - filter-whiteamplitude
-  #     - filter-whitefwhm
-  #     - apodfact
-  #     - mask-type
-  #     - mask-subproduct
-  #     - config-name
-  #     - dust-freq
-  #     - skyfrac
-  #     - est
-  #   options:
-  #     dust-type: pysm_d1
-  #   depends:
-  #     - stage_generate_fgs_pysm_d1
-  #     - stage_filter
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_auto.py
+  stage_auto_pysm_d1:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+      - apodfact
+      - mask-type
+      - mask-subproduct
+      - config-name
+      - dust-freq
+      - skyfrac
+      - est
+    options:
+      dust-type: pysm_d1
+    depends:
+      - stage_generate_fgs_pysm_d1
+      - stage_filter
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_auto.py
 
-  # stage_auto_pysm_d6:
-  #   exec: python
-  #   globals:
-  #     - mlmax
-  #     - lmax
-  #     - lmin
-  #     - filter-whiteamplitude
-  #     - filter-whitefwhm
-  #     - apodfact
-  #     - mask-type
-  #     - mask-subproduct
-  #     - config-name
-  #     - dust-freq
-  #     - skyfrac
-  #     - est
-  #   options:
-  #     dust-type: pysm_d6
-  #   depends:
-  #     - stage_generate_fgs_pysm_d6
-  #     - stage_filter
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_auto.py
+  stage_auto_pysm_d6:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+      - apodfact
+      - mask-type
+      - mask-subproduct
+      - config-name
+      - dust-freq
+      - skyfrac
+      - est
+    options:
+      dust-type: pysm_d6
+    depends:
+      - stage_generate_fgs_pysm_d6
+      - stage_filter
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_auto.py
  
-  # stage_auto_pysm_d10:
-  #   exec: python
-  #   globals:
-  #     - mlmax
-  #     - lmax
-  #     - lmin
-  #     - filter-whiteamplitude
-  #     - filter-whitefwhm
-  #     - apodfact
-  #     - mask-type
-  #     - mask-subproduct
-  #     - config-name
-  #     - dust-freq
-  #     - skyfrac
-  #     - est
-  #   options:
-  #     dust-type: pysm_d10
-  #   depends:
-  #     - stage_generate_fgs_pysm_d10
-  #     - stage_filter
-  #   parallel:
-  #     nproc: 1
-  #     threads: 7
-  #     walltime: '00:05:00'
-  #   script: mbatch/stage_auto.py 
+  stage_auto_pysm_d10:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+      - apodfact
+      - mask-type
+      - mask-subproduct
+      - config-name
+      - dust-freq
+      - skyfrac
+      - est
+    options:
+      dust-type: pysm_d10
+    depends:
+      - stage_generate_fgs_pysm_d10
+      - stage_filter
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_auto.py 
