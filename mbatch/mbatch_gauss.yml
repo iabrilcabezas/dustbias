@@ -1,0 +1,121 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  est: TT
+  nside: 2048
+  config-name: act_dr6v4
+  mask-type: wide_v4_20220316
+  mask-subproduct: lensing_masks
+  apodfact: 3dg
+  mlmax: 4000
+  lmax: 3000
+  lmin: 600
+  filter-whiteamplitude: 12
+  filter-whitefwhm: 1.4
+  tilt: -0.8
+  amplitude: 119.47982655
+
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_dust_2pt:
+    exec: python
+    globals:
+      - tilt
+      - amplitude
+      - mlmax
+    parallel:
+      nproc: 1
+      threads: 1
+      walltime: '00:05:00'
+    script: mbatch/stage_generate_gauss_sims_2pt.py
+
+  stage_dust_sims:
+    exec: python
+    globals:
+      - tilt
+      - amplitude
+      - mlmax
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+    options:
+      sims-start: 11
+      sims-end: 99
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:30:00'
+    script: mbatch/stage_generate_gauss_sims_maps.py
+
+  stage_filter:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_compute_filters.py
+
+  stage_mf_set0_GAL070:
+    exec: python
+    globals:
+      - tilt
+      - amplitude
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 0
+      sims-end: 49
+      skyfrac: GAL070
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:30:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py
+
+  stage_mf_set1_GAL070:
+    exec: python
+    globals:
+      - tilt
+      - amplitude
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 50
+      sims-end: 99
+      skyfrac: GAL070
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:10:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py

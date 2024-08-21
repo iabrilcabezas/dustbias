@@ -12,6 +12,7 @@ from orphics import stats
 EST_NORM_LIST = ['TT', 'TE', 'TB', 'EB', 'EE', 'MV', 'MVPOL']
 FG_PATH_DICT = {'dust_van': '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/vans_d1_SOS4_090_tophat_map_2048',
                 'dust_DF':  '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/DustFilaments_TQU_NS2048_Nfil180p5M_LR71Normalization_95p0GHz'}
+FSKYS = ['GAL070', 'GAL060', 'GAL040']
 
 def bandedcls(cl,_bin_edges):
     ls=np.arange(cl.size)
@@ -44,6 +45,33 @@ def get_noise_dict_name(args):
     filter_label = get_filter_name(args)
     return f'noise_dict_{filter_label}.npy'
 
+def get_dust_2pt_name(args, sim=None, fsky=None):
+
+    tag = f'{np.abs(args.tilt):.2f}_{args.amplitude:.1f}'
+
+    if sim is not None:
+        tag = f'{tag}_{sim}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_2pt_{tag}.txt'
+
+def get_gauss_dust_map_name(args, sim, fsky=None):
+    
+    tag = f'{args.nside}_{np.abs(args.tilt):.2f}_{args.amplitude:.1f}_{sim}'
+
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_gauss_map_{tag}.fits'
+
+def get_mf_name(args):
+
+    filter_tag = get_filter_name(args)
+    ell_tag = get_name_ellrange(args)
+    tag = f'{args.est}_{filter_tag}_{ell_tag}_{args.sims_start}_{args.sims_end}_{args.skyfrac}'
+
+    return f'mf_grad_{tag}', f'mf_curl_{tag}'
 
 def hp_rotate(map_hp, coord):
     """Rotate healpix map between coordinate systems
@@ -131,7 +159,7 @@ def get_qfunc_forqe(args):
     # CMB cls for response and total cls (includes noise) - select only ucls
     ucls = futils.get_theory_dicts(lmax=args.mlmax, grad=True)[0]
 
-    
+    filter_label = get_filter_name(args)
     Als = np.load(f'{args.norm_dir}/Als_{filter_label}_lmin{args.lmin}_lmax{args.lmax}.npy',allow_pickle='TRUE').item()
 
     qfunc = get_qfunc(px, ucls, args.mlmax, args.est, Al1=Als[args.est], est2=None, Al2=None, R12=None)
