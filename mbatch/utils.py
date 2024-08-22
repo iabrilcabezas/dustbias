@@ -1,4 +1,4 @@
-
+import os
 import healpy as hp
 from healpy.rotator import Rotator
 import numpy as np
@@ -8,6 +8,7 @@ from solenspipe import get_qfunc
 from falafel import utils as futils
 from falafel import qe
 from orphics import stats
+from pixell import curvedsky as cs
 
 EST_NORM_LIST = ['TT', 'TE', 'TB', 'EB', 'EE', 'MV', 'MVPOL']
 FG_PATH_DICT = {'dust_van': '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/vans_d1_SOS4_090_tophat_map_2048',
@@ -45,9 +46,13 @@ def get_noise_dict_name(args):
     filter_label = get_filter_name(args)
     return f'noise_dict_{filter_label}.npy'
 
+def get_pl_tag(args):
+
+    return f'{np.abs(args.tilt):.2f}_{args.amplitude:.1f}'
+
 def get_dust_2pt_name(args, sim=None, fsky=None):
 
-    tag = f'{np.abs(args.tilt):.2f}_{args.amplitude:.1f}'
+    tag = get_pl_tag(args)
 
     if sim is not None:
         tag = f'{tag}_{sim}'
@@ -58,7 +63,7 @@ def get_dust_2pt_name(args, sim=None, fsky=None):
 
 def get_gauss_dust_map_name(args, sim, fsky=None):
     
-    tag = f'{args.nside}_{np.abs(args.tilt):.2f}_{args.amplitude:.1f}_{sim}'
+    tag = f'{args.nside}_{get_pl_tag(args)}_{sim}'
 
     if fsky is not None:
         tag = f'{tag}_{fsky}'
@@ -67,11 +72,45 @@ def get_gauss_dust_map_name(args, sim, fsky=None):
 
 def get_mf_name(args):
 
+    run_tag = get_name_run(args)
+    tag = f'{run_tag}_{args.sims_start}_{args.sims_end}_{args.skyfrac}'
+
+    return f'mf_grad_{tag}.fits', f'mf_curl_{tag}.fits'
+
+def get_name_run(args):
+
     filter_tag = get_filter_name(args)
     ell_tag = get_name_ellrange(args)
-    tag = f'{args.est}_{filter_tag}_{ell_tag}_{args.sims_start}_{args.sims_end}_{args.skyfrac}'
+    pl_tag = get_pl_tag(args)
+    tag = f'{args.est}_{pl_tag}_{filter_tag}_{ell_tag}'
 
-    return f'mf_grad_{tag}', f'mf_curl_{tag}'
+    return tag
+
+def get_auto_name(args, mf=False, tag=None):
+
+    run_tag = get_name_run(args)
+
+    if tag is not None:
+        run_tag = f'{run_tag}_{tag}'
+
+    if not mf:
+        return f'phi_{run_tag}_nomf.txt'
+        
+    return f'phi_{run_tag}.txt'
+
+
+def get_nalms(lmax, mmax = None):
+
+    '''
+    Calculate number of alms given (ell max, m max) [healpy format]
+    '''
+
+    if mmax is None:
+        ainfo = cs.alm_info(lmax)
+    else:
+        ainfo = cs.alm_info(lmax = lmax, mmax = mmax)
+        
+    return ainfo.nelem
 
 def hp_rotate(map_hp, coord):
     """Rotate healpix map between coordinate systems
@@ -165,3 +204,21 @@ def get_qfunc_forqe(args):
     qfunc = get_qfunc(px, ucls, args.mlmax, args.est, Al1=Als[args.est], est2=None, Al2=None, R12=None)
 
     return qfunc
+
+
+def read_meanfield(args):
+
+    nalms = get_nalms(args.mlmax)
+    run_tag = get_name_run(args)
+
+    mf_data = {name: np.zeros(nalms, dtype=np.complex128) for name in ['mf_grad_set0', 'mf_curl_set0', 'mf_grad_set1', 'mf_curl_set1']}
+
+    for mfset in [0,1]:
+        path = f'{args.output_dir}/../stage_mf_set{mfset}_{args.skyfrac}/'
+        files = os.listdir(path)
+
+        for comp in ['grad', 'curl']:
+            mfname = [file for file in files if file.startswith(f'mf_{comp}_{run_tag}')][0]
+            mf_data[f'mf_{comp}_set{mfset}'] = hp.read_alm(path + mfname)
+
+    return mf_data
