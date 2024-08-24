@@ -29,7 +29,7 @@ def get_filter_name(args):
 
     return f'white_{args.filter_whiteamplitude}_{args.filter_whitefwhm}'
 
-def get_auto_name(args):
+def get_auto_name_old(args):
 
     return f'phi_{args.est}_{get_dust_name(args)}_{get_filter_name(args)}_{get_name_ellrange(args)}'
 
@@ -45,6 +45,9 @@ def get_noise_dict_name(args):
 
     filter_label = get_filter_name(args)
     return f'noise_dict_{filter_label}.npy'
+
+def get_name_fitparams():
+    return 'dust_fit_params.npy'
 
 def get_pl_tag(args):
 
@@ -82,7 +85,7 @@ def get_name_run(args):
     filter_tag = get_filter_name(args)
     ell_tag = get_name_ellrange(args)
     pl_tag = get_pl_tag(args)
-    tag = f'{args.est}_{pl_tag}_{filter_tag}_{ell_tag}'
+    tag = f'{args.est}_{args.dust_type}_{pl_tag}_{filter_tag}_{ell_tag}'
 
     return tag
 
@@ -98,6 +101,18 @@ def get_auto_name(args, mf=False, tag=None):
         
     return f'phi_{run_tag}.txt'
 
+def get_dustfgtype_2pt_name(dust_type, amplitude, tilt, sim_id):
+    return f'cl_2pt_{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}.txt'
+
+def get_dustfgtype_map_name(dust_type, amplitude, tilt, sim_id, fsky=None):
+    tag = f'{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_{tag}.fits'
+
+def get_N0_TT_name(args):
+    run_tag = get_name_run(args)
+    return f'N0_grad_{run_tag}.txt'
 
 def get_nalms(lmax, mmax = None):
 

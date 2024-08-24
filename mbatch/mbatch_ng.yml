@@ -1,0 +1,81 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  est: TT
+  nside: 2048
+  config-name: act_dr6v4
+  mask-type: wide_v4_20220316
+  mask-subproduct: lensing_masks
+  apodfact: 3dg
+  mlmax: 4000
+  lmax: 3000
+  lmin: 600
+  filter-whiteamplitude: 12
+  filter-whitefwhm: 1.4
+  dust-freq: 95
+  hpmask-fname: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/Planck/HFI_Mask_GalPlane-apo5_2048_R2.00.fits
+  hpmask-fname-field: 3
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_data:
+    exec: python
+    globals:
+      - mlmax
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - dust-freq
+      - hpmask-fname
+      - hpmask-fname-field
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:10:00'
+    script: mbatch/stage_generate_dustng_maps.py
+
+  stage_filter:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_compute_filters.py
+
+  stage_auto_GAL070:
+    exec: python
+    depends:
+      - stage_data
+    globals:
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      skyfrac: GAL070
+      meanfield: False
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:10:00'
+    script: mbatch/stage_ng_auto.py

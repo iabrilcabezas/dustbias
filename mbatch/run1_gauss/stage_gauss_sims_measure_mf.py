@@ -41,7 +41,7 @@ parser.add_argument("--mask-type", type=str, default='wide_v4_20220316')
 parser.add_argument("--mask-subproduct", type=str, default='lensing_masks')
 parser.add_argument("--apodfact", type=str, default='3dg')
 parser.add_argument("--skyfrac", type=str, default='GAL070')
-
+parser.add_argument("--dust-type", type=str, default='gauss')
 args = parser.parse_args()
 
 sims_ids = np.arange(args.sims_start, args.sims_end + 1)

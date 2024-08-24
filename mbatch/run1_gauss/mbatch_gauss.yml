@@ -32,7 +32,7 @@ stages:
   #     nproc: 1
   #     threads: 1
   #     walltime: '00:05:00'
-  #   script: mbatch/stage_generate_gauss_sims_2pt.py
+  #   script: mbatch/run1_gauss/stage_generate_gauss_sims_2pt.py
 
   # stage_dust_sims:
   #   exec: python
@@ -52,7 +52,7 @@ stages:
   #     nproc: 1
   #     threads: 7
   #     walltime: '00:30:00'
-  #   script: mbatch/stage_generate_gauss_sims_maps.py
+  #   script: mbatch/run1_gauss/stage_generate_gauss_sims_maps.py
 
   stage_dust_data:
     exec: python
@@ -72,7 +72,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_gauss_sims_maps.py
+    script: mbatch/run1_gauss/stage_generate_gauss_sims_maps.py
 
   # stage_filter:
   #   exec: python
@@ -112,7 +112,7 @@ stages:
   #     nproc: 5
   #     threads: 35
   #     walltime: '00:30:00'
-  #   script: mbatch/stage_gauss_sims_measure_mf.py
+  #   script: mbatch/run1_gauss/stage_gauss_sims_measure_mf.py
 
   # stage_mf_set1_GAL070:
   #   exec: python
@@ -138,7 +138,7 @@ stages:
   #     nproc: 5
   #     threads: 35
   #     walltime: '00:10:00'
-  #   script: mbatch/stage_gauss_sims_measure_mf.py
+  #   script: mbatch/run1_gauss/stage_gauss_sims_measure_mf.py
 
   stage_auto_GAL070:
     exec: python
@@ -158,8 +158,9 @@ stages:
       - filter-whitefwhm
     options:
       skyfrac: GAL070
+      meanfield: True
     parallel:
       nproc: 1
       threads: 7
       walltime: '00:10:00'
-    script: mbatch/stage_measure_gauss_sims_auto_mf.py
+    script: mbatch/run1_gauss/stage_measure_gauss_sims_auto_mf.py

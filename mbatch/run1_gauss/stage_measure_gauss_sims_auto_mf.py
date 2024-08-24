@@ -36,7 +36,8 @@ parser.add_argument("--mask-type", type=str, default='wide_v4_20220316')
 parser.add_argument("--mask-subproduct", type=str, default='lensing_masks')
 parser.add_argument("--apodfact", type=str, default='3dg')
 parser.add_argument("--skyfrac", type=str, default='GAL070')
-
+parser.add_argument("--meanfield", action='store_true', help='subtract meanfield')
+parser.add_argument("--dust-type", type=str, default='gauss')
 args = parser.parse_args()
 
 output_path = lambda x: os.path.join(args.output_dir, x)
@@ -47,7 +48,8 @@ mask = dm.read_mask(subproduct=args.mask_subproduct, mask_type=args.mask_type,**
 args.wcs, args.shape = mask.wcs, mask.shape
 px = get_px_frommask(args)
 
-mf_data = read_meanfield(args)
+if args.meanfield:
+    mf_data = read_meanfield(args)
 
 ucls = futils.get_theory_dicts(lmax=args.mlmax, grad=True)[0]
 # Load the noise power spectrum and filter the alms
@@ -72,19 +74,21 @@ f_alms = np.array([f_foreground_alms, np.zeros_like(f_foreground_alms), np.zeros
 # Compute the 4-point function of the filtered alms
 foreground_4pt = qfunc(f_alms , f_alms)
 
-xy_g0 = foreground_4pt[0] - mf_data['mf_grad_set0']
-xy_g1 = foreground_4pt[0] - mf_data['mf_grad_set1']
+if args.meanfield:
 
-# xy_c0 = foreground_4pt[1] - mf_data['mf_curl_set0']
-# xy_c1 = foreground_4pt[1] - mf_data['mf_curl_set0']
+    xy_g0 = foreground_4pt[0] - mf_data['mf_grad_set0']
+    xy_g1 = foreground_4pt[0] - mf_data['mf_grad_set1']
 
-# Compute the power spectrum of the 4-point function
+    # xy_c0 = foreground_4pt[1] - mf_data['mf_curl_set0']
+    # xy_c1 = foreground_4pt[1] - mf_data['mf_curl_set0']
 
-cls_4pt = cs.alm2cl(xy_g0, xy_g1) / w_n(mask, 4)
-cls_4pt_noise0 = cs.alm2cl(xy_g0) / w_n(mask, 4)
+    # Compute the power spectrum of the 4-point function
+    cls_4pt = cs.alm2cl(xy_g0, xy_g1) / w_n(mask, 4)
+    cls_4pt_noise0 = cs.alm2cl(xy_g0) / w_n(mask, 4)
+    
+    # Save the power spectrum to a file
+    np.savetxt(output_path(get_auto_name(args, mf=True)), cls_4pt)
+    np.savetxt(output_path(get_auto_name(args, mf=True, tag='set00')), cls_4pt_noise0)
+
 cls_4pt_nomf = cs.alm2cl(foreground_4pt[0]) / w_n(mask, 4)
-
-# Save the power spectrum to a file
-np.savetxt(output_path(get_auto_name(args, mf=True)), cls_4pt)
-np.savetxt(output_path(get_auto_name(args, mf=True, tag='set00')), cls_4pt_noise0)
 np.savetxt(output_path(get_auto_name(args, mf=False)), cls_4pt_nomf)

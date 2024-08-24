@@ -37,7 +37,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_fgs.py
+    script: mbatch/run0_rawcl/stage_generate_fgs.py
 
   stage_generate_fgs_dust_van:
     exec: python
@@ -55,7 +55,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_fgs.py
+    script: mbatch/run0_rawcl/stage_generate_fgs.py
 
   stage_generate_fgs_pysm_d1:
     exec: python
@@ -73,7 +73,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_fgs.py
+    script: mbatch/run0_rawcl/stage_generate_fgs.py
 
   stage_generate_fgs_pysm_d6:
     exec: python
@@ -91,7 +91,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_fgs.py
+    script: mbatch/run0_rawcl/stage_generate_fgs.py
 
   stage_generate_fgs_pysm_d10:
     exec: python
@@ -109,7 +109,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_generate_fgs.py
+    script: mbatch/run0_rawcl/stage_generate_fgs.py
   
   stage_filter:
     exec: python
@@ -149,7 +149,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_auto.py
+    script: mbatch/run0_rawcl/stage_auto.py
 
   stage_auto_dust_van:
     exec: python
@@ -175,7 +175,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_auto.py
+    script: mbatch/run0_rawcl/stage_auto.py
 
   stage_auto_pysm_d1:
     exec: python
@@ -201,7 +201,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_auto.py
+    script: mbatch/run0_rawcl/stage_auto.py
 
   stage_auto_pysm_d6:
     exec: python
@@ -227,7 +227,7 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_auto.py
+    script: mbatch/run0_rawcl/stage_auto.py
  
   stage_auto_pysm_d10:
     exec: python
@@ -253,4 +253,4 @@ stages:
       nproc: 1
       threads: 7
       walltime: '00:05:00'
-    script: mbatch/stage_auto.py 
+    script: mbatch/run0_rawcl/stage_auto.py 
