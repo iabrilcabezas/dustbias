@@ -14,6 +14,7 @@ EST_NORM_LIST = ['TT', 'TE', 'TB', 'EB', 'EE', 'MV', 'MVPOL']
 FG_PATH_DICT = {'dust_van': '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/vans_d1_SOS4_090_tophat_map_2048',
                 'dust_DF':  '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/DustFilaments_TQU_NS2048_Nfil180p5M_LR71Normalization_95p0GHz'}
 FSKYS = ['GAL070', 'GAL060', 'GAL040']
+DUST_TYPES = ['gauss', 'd9', 'd10', 'd12', 'van', 'DF']
 
 def bandedcls(cl,_bin_edges):
     ls=np.arange(cl.size)
@@ -73,25 +74,37 @@ def get_gauss_dust_map_name(args, sim, fsky=None):
 
     return f'dust_gauss_map_{tag}.fits'
 
-def get_mf_name(args):
+def get_dust_map_name(args, sim, fsky=None):
+    
+    tag = f'{args.dust_type}_{args.mlmax}_{sim}'
 
-    run_tag = get_name_run(args)
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_map_{tag}.fits'
+
+def get_mf_name(args, pl_tag=True):
+
+    run_tag = get_name_run(args, pl_tag=pl_tag)
     tag = f'{run_tag}_{args.sims_start}_{args.sims_end}_{args.skyfrac}'
 
     return f'mf_grad_{tag}.fits', f'mf_curl_{tag}.fits'
 
-def get_name_run(args):
+def get_name_run(args, pl_tag=True):
 
     filter_tag = get_filter_name(args)
     ell_tag = get_name_ellrange(args)
-    pl_tag = get_pl_tag(args)
-    tag = f'{args.est}_{args.dust_type}_{pl_tag}_{filter_tag}_{ell_tag}'
 
-    return tag
+    if pl_tag:
+        pl_tag = get_pl_tag(args)
+        return f'{args.est}_{args.dust_type}_{pl_tag}_{filter_tag}_{ell_tag}'
 
-def get_auto_name(args, mf=False, tag=None):
+    return f'{args.est}_{args.dust_type}_{filter_tag}_{ell_tag}'
 
-    run_tag = get_name_run(args)
+
+def get_auto_name(args, pl_tag=True, mf=False, tag=None):
+
+    run_tag = get_name_run(args, pl_tag=pl_tag)
 
     if tag is not None:
         run_tag = f'{run_tag}_{tag}'
@@ -101,17 +114,43 @@ def get_auto_name(args, mf=False, tag=None):
         
     return f'phi_{run_tag}.txt'
 
-def get_dustfgtype_2pt_name(dust_type, amplitude, tilt, sim_id):
-    return f'cl_2pt_{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}.txt'
+# def get_dustfgtype_2pt_name(dust_type, amplitude, tilt, sim_id):
+#     return f'cl_2pt_{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}.txt'
 
-def get_dustfgtype_map_name(dust_type, amplitude, tilt, sim_id, fsky=None):
-    tag = f'{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}'
+# def get_dustfgtype_map_name(dust_type, amplitude, tilt, sim_id, fsky=None):
+#     tag = f'{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}'
+#     if fsky is not None:
+#         tag = f'{tag}_{fsky}'
+#     return f'map_{tag}.fits'
+
+def get_scaled_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
     if fsky is not None:
         tag = f'{tag}_{fsky}'
-    return f'map_{tag}.fits'
+    return f'map_car_scaled_{tag}.fits'
 
-def get_N0_TT_name(args):
-    run_tag = get_name_run(args)
+def get_2pt_scaled_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_scaled_2pt_{tag}.txt'
+
+def get_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_{tag}.fits'
+
+def get_2pt_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_2pt_{tag}.txt'
+
+def get_N0_TT_name(args, pl_tag=True, tag=None):
+    run_tag = get_name_run(args, pl_tag=pl_tag)
+    if tag:
+        run_tag = f'{run_tag}_{tag}'
     return f'N0_grad_{run_tag}.txt'
 
 def get_nalms(lmax, mmax = None):
@@ -224,12 +263,12 @@ def get_qfunc_forqe(args):
 def read_meanfield(args):
 
     nalms = get_nalms(args.mlmax)
-    run_tag = get_name_run(args)
+    run_tag = get_name_run(args, pl_tag=False)
 
     mf_data = {name: np.zeros(nalms, dtype=np.complex128) for name in ['mf_grad_set0', 'mf_curl_set0', 'mf_grad_set1', 'mf_curl_set1']}
 
     for mfset in [0,1]:
-        path = f'{args.output_dir}/../stage_mf_set{mfset}_{args.skyfrac}/'
+        path = f'{args.output_dir}/../stage_mf_{args.dust_type}_set{mfset}_{args.skyfrac}/'
         files = os.listdir(path)
 
         for comp in ['grad', 'curl']:

@@ -4,12 +4,13 @@ import argparse
 import numpy as np
 from orphics import maps
 from solenspipe import get_qfunc
-from solenspipe.utility import w_n
+from solenspipe.utility import w_n, smooth_cls
 from sofind import DataModel
 from pixell import enmap, curvedsky as cs
 import falafel.utils as futils
 from falafel import qe
 import utils as autils
+from utils import DUST_TYPES
 import pytempura
 # load data sim
 
@@ -35,6 +36,7 @@ parser.add_argument("--mask-subproduct", type=str, default='lensing_masks')
 parser.add_argument("--apodfact", type=str, default='3dg')
 parser.add_argument("--skyfrac", type=str, default='GAL070')
 parser.add_argument("--meanfield", action='store_true', help='subtract meanfield')
+parser.add_argument("--dust-type", type=str, default='gauss')
 
 args = parser.parse_args()
 
@@ -53,7 +55,7 @@ ucls = futils.get_theory_dicts(lmax=args.mlmax, grad=True)[0]
 # Load the noise power spectrum and filter the alms
 noise_dict = np.load(output_path(f'../stage_filter/{autils.get_noise_dict_name(args)}'), allow_pickle=True).item()
 Als = np.load(output_path(f'../stage_filter/{autils.get_norm_name(args)}'), allow_pickle=True).item()
-fit_scaled_params = np.load(output_path(f'../stage_data/{autils.get_name_fitparams()}'), allow_pickle=True).item()
+# fit_scaled_params = np.load(output_path(f'../stage_data/{autils.get_name_fitparams()}'), allow_pickle=True).item()
 
 cl_tot = noise_dict[args.est]
 
@@ -65,44 +67,45 @@ ell = np.arange(len(noise_cls_TT))
 noise_interp_func = maps.interp(ell, noise_cls_TT)
 filter_func_T = 1. / noise_interp_func(ell)
 
-for dust_type, fit_params in fit_scaled_params.items():
+# for dust_type in DUST_TYPES:
 
-    args.dust_type = dust_type
-    args.tilt, args.amplitude = fit_params['tilt'], fit_params['amplitude']
+#     args.dust_type = dust_type
+    # args.tilt, args.amplitude = fit_params['tilt'], fit_params['amplitude']
 
-    foreground_map = enmap.read_map(output_path(f'../stage_data/{autils.get_dustfgtype_map_name(dust_type, args.amplitude, args.tilt, sim_id=1000, fsky=args.skyfrac)}'))
-    foreground_alms = cs.map2alm(foreground_map, lmax=args.mlmax)
+foreground_map = enmap.read_map(output_path(f'../stage_data/{autils.get_scaled_map_name(args.dust_type, sim_id=1000, fsky=args.skyfrac)}'))
+foreground_alms = cs.map2alm(foreground_map, lmax=args.mlmax)
 
-    f_foreground_alms = qe.filter_alms(foreground_alms, filter_func_T, lmin=args.lmin, lmax=args.lmax)
+f_foreground_alms = qe.filter_alms(foreground_alms, filter_func_T, lmin=args.lmin, lmax=args.lmax)
 
-    f_alms = np.array([f_foreground_alms, np.zeros_like(f_foreground_alms), np.zeros_like(f_foreground_alms)])
+f_alms = np.array([f_foreground_alms, np.zeros_like(f_foreground_alms), np.zeros_like(f_foreground_alms)])
 
-    # Compute the 4-point function of the filtered alms
-    foreground_4pt = qfunc(f_alms , f_alms)
+# Compute the 4-point function of the filtered alms
+foreground_4pt = qfunc(f_alms , f_alms)
 
-    if args.meanfield:
+if args.meanfield:
 
-        xy_g0 = foreground_4pt[0] - mf_data['mf_grad_set0']
-        xy_g1 = foreground_4pt[0] - mf_data['mf_grad_set1']
+    xy_g0 = foreground_4pt[0] - mf_data['mf_grad_set0']
+    xy_g1 = foreground_4pt[0] - mf_data['mf_grad_set1']
 
-        # xy_c0 = foreground_4pt[1] - mf_data['mf_curl_set0']
-        # xy_c1 = foreground_4pt[1] - mf_data['mf_curl_set0']
+    # xy_c0 = foreground_4pt[1] - mf_data['mf_curl_set0']
+    # xy_c1 = foreground_4pt[1] - mf_data['mf_curl_set0']
 
-        # Compute the power spectrum of the 4-point function
-        cls_4pt = cs.alm2cl(xy_g0, xy_g1) / w_n(mask, 4)
-        cls_4pt_noise0 = cs.alm2cl(xy_g0) / w_n(mask, 4)
-        
-        # Save the power spectrum to a file
-        np.savetxt(output_path(autils.get_auto_name(args, mf=True)), cls_4pt)
-        np.savetxt(output_path(autils.get_auto_name(args, mf=True, tag='set00')), cls_4pt_noise0)
+    # Compute the power spectrum of the 4-point function
+    cls_4pt = cs.alm2cl(xy_g0, xy_g1) / w_n(mask, 4)
+    cls_4pt_noise0 = cs.alm2cl(xy_g0) / w_n(mask, 4)
+    
+    # Save the power spectrum to a file
+    np.savetxt(output_path(autils.get_auto_name(args, pl_tag=False, mf=True)), cls_4pt)
+    np.savetxt(output_path(autils.get_auto_name(args, pl_tag=False, mf=True, tag='set00')), cls_4pt_noise0)
 
-    cls_4pt_nomf = cs.alm2cl(foreground_4pt[0]) / w_n(mask, 4)
-    np.savetxt(output_path(autils.get_auto_name(args, mf=False)), cls_4pt_nomf)
+cls_4pt_nomf = cs.alm2cl(foreground_4pt[0]) / w_n(mask, 4)
+np.savetxt(output_path(autils.get_auto_name(args, pl_tag=False, mf=False)), cls_4pt_nomf)
 
-    cl_fg = np.loadtxt(output_path(f'../stage_data/{autils.get_dustfgtype_2pt_name(args.dust_type, args.amplitude, args.tilt, sim_id=1000)}'))
-    cl_2pt_tcls = {args.est: cl_tot**2 / cl_fg}
+cl_fg = np.loadtxt(output_path(f'../stage_data/{autils.get_2pt_scaled_map_name(args.dust_type, sim_id=1000, fsky=args.skyfrac)}'))
+cl_fg = smooth_cls(cl_fg, points=300)
+cl_2pt_tcls = {args.est: cl_tot**2 / cl_fg}
 
-    Al_dust_N0_TT = pytempura.get_norms([args.est], ucls, ucls, cl_2pt_tcls, args.lmin, args.lmax, k_ellmax=args.mlmax, profile=None)
-    N0_TT_grad = Als[args.est][0]**2 / Al_dust_N0_TT[args.est][0]
+Al_dust_N0_TT = pytempura.get_norms([args.est], ucls, ucls, cl_2pt_tcls, args.lmin, args.lmax, k_ellmax=args.mlmax, profile=None)
+N0_TT_grad = Als[args.est][0]**2 / Al_dust_N0_TT[args.est][0]
 
-    np.savetxt(output_path(autils.get_N0_TT_name(args)), N0_TT_grad)
+np.savetxt(output_path(autils.get_N0_TT_name(args, pl_tag=False, tag='smoothed')), N0_TT_grad)
