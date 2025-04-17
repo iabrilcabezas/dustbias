@@ -1,0 +1,72 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+
+globals:
+  estimator: TT
+  maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250104_ilc/
+  experiment: 'ACT'
+  mlmax: 4000
+  lmin: 600
+  lmax: 3000
+  filter-whitefwhm: 1.4
+  filter-whiteamplitude: 12
+  profile-path: /home/ia404/gitreps/so-lenspipe/data/tsz_profile5000.txt
+  ilc: True
+  ilc-type: 'fcoadd'
+
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_filter_ACT_fcoadd_fskys:
+    exec: python
+    globals:
+      - estimator
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - profile-path
+      - ilc
+      - ilc-type
+    options:
+      bias-hardening: True
+      profile-hardening: True
+      fgtypes: 'd9 d10 d12 DF_EB0 low medium high vand1 vand1s1'
+      fskys: 'GAL060 GAL070 GAL080'
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_ACT_fcoadd_fskys_False:
+    exec: python
+    globals:
+      - estimator
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - profile-path
+      - ilc
+      - ilc-type
+    options:
+      bias-hardening: False
+      profile-hardening: False
+      fgtypes: 'd9 d10 d12 DF_EB0 low medium high vand1 vand1s1'
+      fskys: 'GAL060 GAL070 GAL080'
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py

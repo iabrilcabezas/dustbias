@@ -1,0 +1,118 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+
+globals:
+  maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_241227/
+  experiment: 'ACT'
+  mlmax: 4000
+  fskys: GAL070
+  lmin: 600
+  lmax: 3000
+  filter-whitefwhm: 1.4
+  filter-whiteamplitude: 12
+  bias-hardening: False
+  profile-hardening: False
+  profile-path: /home/ia404/gitreps/so-lenspipe/data/tsz_profile5000.txt
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_filter_ACT_90_MVPOL:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high'
+      freq: 90
+      estimator: MVPOL
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_ACT_90_EB:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high'
+      freq: 90
+      estimator: EB
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_ACT_150_MVPOL:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high'
+      freq: 150
+      estimator: MVPOL
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_ACT_150_EB:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high'
+      freq: 150
+      estimator: EB
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py

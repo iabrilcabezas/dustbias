@@ -1,0 +1,142 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+
+globals:
+  maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250326_wcsSO/ #41227/ 250103
+  experiment: 'SO'
+  mlmax: 4000
+  fskys: GAL070
+  lmin: 600
+  lmax: 3000
+  filter-whitefwhm: 1.4
+  filter-whiteamplitude: 6
+  bias-hardening: False
+  profile-hardening: False
+  profile-path: /home/ia404/gitreps/so-lenspipe/data/tsz_profile5000.txt
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_filter_SO_93_TT:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high vand1 vand1s1'
+      freq: 93
+      estimator: TT
+    parallel:
+      nproc: 1
+      threads: 14
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_SO_93_MV:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high vand1 vand1s1'
+      freq: 93
+      estimator: MV
+    parallel:
+      nproc: 1
+      threads: 28
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_SO_93_EB:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high vand1 vand1s1'
+      freq: 93
+      estimator: EB
+    parallel:
+      nproc: 1
+      threads: 14
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_SO_93_EE:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high vand1 vand1s1'
+      freq: 93
+      estimator: EE
+    parallel:
+      nproc: 1
+      threads: 14
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_SO_93_MVPOL:
+    exec: python
+    globals:
+      - maps-path
+      - experiment
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - filter-whiteamplitude
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+      - fskys
+    options:
+      fgtypes: 'd9 d10 d12 DF_EB0 DF_EB low medium high vand1 vand1s1'
+      freq: 93
+      estimator: MVPOL
+    parallel:
+      nproc: 1
+      threads: 14
+      walltime: '00:25:00'
+    script: compute_biases.py

@@ -1,0 +1,69 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+
+globals:
+  estimator: TT
+ # 41227/
+  freq: 90
+  mlmax: 4000
+  lmin: 600
+  lmax: 3000
+  filter-whitefwhm: 1.4
+  bias-hardening: True
+  profile-hardening: True
+  profile-path: /home/ia404/gitreps/so-lenspipe/data/tsz_profile5000.txt
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_filter_ACT_fskys:
+    exec: python
+    globals:
+      - estimator
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+    options:
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/
+      fgtypes: 'd9 d10 d12 low medium high'
+      fskys: 'GAL060 GAL070 GAL080'
+      filter-whiteamplitude: 12
+      experiment: 'ACT'
+      freq: 90
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:25:00'
+    script: compute_biases.py
+
+  stage_filter_SO_fskys:
+    exec: python
+    globals:
+      - estimator
+      - mlmax
+      - lmin
+      - lmax
+      - filter-whitefwhm
+      - bias-hardening
+      - profile-hardening
+      - profile-path
+    options:
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103_wcsSO/
+      fgtypes: 'd9 d10 d12 low medium high'
+      fskys: 'GAL070 GAL080'
+      filter-whiteamplitude: 6
+      experiment: 'SO'
+      freq: 93
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:15:00'
+    script: compute_biases.py
