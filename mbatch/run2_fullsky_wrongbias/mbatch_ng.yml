@@ -1,0 +1,264 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  est: TT
+  nside: 2048
+  config-name: act_dr6v4
+  mask-type: wide_v4_20220316
+  mask-subproduct: lensing_masks
+  apodfact: 3dg
+  mlmax: 4000
+  lmax: 3000
+  lmin: 600
+  filter-whiteamplitude: 12
+  filter-whitefwhm: 1.4
+  dust-freq: 95
+  hpmask-fname: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/Planck/HFI_Mask_GalPlane-apo5_2048_R2.00.fits
+  hpmask-fname-field: 3
+  tilt-gauss: -0.8
+  amplitude-gauss: 119.47982655
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_data:
+    exec: python
+    globals:
+      - mlmax
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - dust-freq
+      - hpmask-fname
+      - hpmask-fname-field
+      - tilt-gauss
+      - amplitude-gauss
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:10:00'
+    script: mbatch/stage_generate_dustng_maps.py
+
+  stage_filter:
+    exec: python
+    globals:
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:05:00'
+    script: mbatch/stage_compute_filters.py
+
+  stage_mf_gauss_sims:
+    exec: python
+    globals:
+      - mlmax
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+    options:
+      dust-type: gauss
+      skyfrac: GAL070
+      sims-start: 0
+      sims-end: 99
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:30:00'
+    script: mbatch/stage_generate_gauss_sims_maps.py
+
+  stage_mf_gauss_set0_GAL070:
+    exec: python
+    globals:
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 0
+      sims-end: 49
+      skyfrac: GAL070
+      dust-type: gauss
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:10:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py
+
+  stage_mf_gauss_set1_GAL070:
+    exec: python
+    globals:
+      # - tilt
+      # - amplitude
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 50
+      sims-end: 99
+      skyfrac: GAL070
+      dust-type: gauss
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:10:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py
+
+  # stage_auto_GAL070:
+  #   exec: python
+  #   depends:
+  #     - stage_data
+  #     - stage_filter
+  #   globals:
+  #     - est
+  #     - nside
+  #     - config-name
+  #     - mask-type
+  #     - mask-subproduct
+  #     - apodfact
+  #     - mlmax
+  #     - lmax
+  #     - lmin
+  #     - filter-whiteamplitude
+  #     - filter-whitefwhm
+  #   options:
+  #     skyfrac: GAL070
+  #     meanfield: True
+  #     dust-type: gauss
+  #   parallel:
+  #     nproc: 1
+  #     threads: 7
+  #     walltime: '00:10:00'
+  #   script: mbatch/stage_ng_auto.py
+
+  stage_mf_d9_sims:
+    exec: python
+    globals:
+      - mlmax
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+    options:
+      dust-type: d9
+      skyfrac: GAL070
+      sims-start: 0
+      sims-end: 99
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:30:00'
+    script: mbatch/stage_generate_gauss_sims_maps.py
+
+  stage_mf_d9_set0_GAL070:
+    exec: python
+    depends:
+      - stage_mf_d9_sims
+    globals:
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 0
+      sims-end: 49
+      skyfrac: GAL070
+      dust-type: d9
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:10:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py
+
+  stage_mf_d9_set1_GAL070:
+    exec: python
+    depends:
+      - stage_mf_d9_sims
+    globals:
+      # - tilt
+      # - amplitude
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      sims-start: 50
+      sims-end: 99
+      skyfrac: GAL070
+      dust-type: d9
+    parallel:
+      nproc: 5
+      threads: 35
+      walltime: '00:10:00'
+    script: mbatch/stage_gauss_sims_measure_mf.py
+
+  stage_auto_GAL070:
+    exec: python
+    depends:
+      - stage_data
+      - stage_filter
+      - stage_mf_d9_set0_GAL070
+      - stage_mf_d9_set1_GAL070
+    globals:
+      - est
+      - nside
+      - config-name
+      - mask-type
+      - mask-subproduct
+      - apodfact
+      - mlmax
+      - lmax
+      - lmin
+      - filter-whiteamplitude
+      - filter-whitefwhm
+    options:
+      skyfrac: GAL070
+      meanfield: True
+      dust-type: d9
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:10:00'
+    script: mbatch/stage_ng_auto.py

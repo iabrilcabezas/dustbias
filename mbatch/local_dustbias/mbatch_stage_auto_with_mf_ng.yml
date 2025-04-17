@@ -1,0 +1,48 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  # mask: /rds/project/dirac_vol5/rds-dirac-dp002/AdvACT/DR6_products/masks/act_mask_fejer1_20220316_GAL070_rms_70.00_downgrade_3dg.fits
+  patches-fsky: '0.001'
+  nsims-mf: 50
+  data-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/mbatch_ng_240824/stage_data/
+
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  stage_auto_mf_gauss:
+    exec: python
+    globals:
+      - patches-fsky
+      - nsims-mf
+      - data-path
+    options:
+      dust-type: gauss
+      sims-start: 113
+      sims-end: 116
+    parallel:
+      nproc: 8
+      threads: 14
+      walltime: '00:30:00'
+    script: stage_gauss_sims_measure_auto_with_mf.py
+
+  stage_auto_mf_d9:
+    exec: python
+    globals:
+      - patches-fsky
+      - nsims-mf
+      - data-path
+    options:
+      dust-type: d9
+      sims-start: 113
+      sims-end: 116
+    parallel:
+      nproc: 8
+      threads: 14
+      walltime: '00:30:00'
+    script: stage_gauss_sims_measure_auto_with_mf.py
+
+

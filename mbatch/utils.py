@@ -22,6 +22,17 @@ def bandedcls(cl,_bin_edges):
     cents,bls = binner.bin(ls,cl)
     return cents,bls
 
+def get_ell_arrays(lmax):
+
+    '''
+    defines ell array and ell factors
+    '''
+
+    ell_array = np.arange(lmax + 1)
+    ell_factor2 = (ell_array * (ell_array + 1.))**2 / (2. * np.pi )
+
+    return ell_array, ell_factor2
+
 def get_dust_name(args):
 
     return f'dust_{args.dust_type}_muK_{args.dust_freq:.0f}GHz_mask_{args.skyfrac}_fejer1'
