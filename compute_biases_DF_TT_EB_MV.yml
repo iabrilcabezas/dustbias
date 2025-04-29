@@ -19,7 +19,199 @@ root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
 
 stages:
 
-  stage_filter_SO_93_TT:
+  # stage_filter_SO_93_TT:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'SO'
+  #     filter-whiteamplitude: 6
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 93
+  #     estimator: TT
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_SO_93_MV:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'SO'
+  #     filter-whiteamplitude: 6
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 93
+  #     estimator: MV
+  #   parallel:
+  #     nproc: 1
+  #     threads: 56
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_SO_93_MVPOL:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'SO'
+  #     filter-whiteamplitude: 6
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 93
+  #     estimator: MVPOL
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_SO_93_EB:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'SO'
+  #     filter-whiteamplitude: 6
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 93
+  #     estimator: EB
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_ACT_90_EB:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'ACT'
+  #     filter-whiteamplitude: 12
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 90
+  #     estimator: EB
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_ACT_90_MVPOL:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'ACT'
+  #     filter-whiteamplitude: 12
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 90
+  #     estimator: MVPOL
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_ACT_90_TT:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'ACT'
+  #     filter-whiteamplitude: 12
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 90
+  #     estimator: TT
+  #   parallel:
+  #     nproc: 1
+  #     threads: 14
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  # stage_filter_ACT_90_MV:
+  #   exec: python
+  #   globals:
+  #     - maps-path
+  #     - mlmax
+  #     - lmin
+  #     - lmax
+  #     - filter-whitefwhm
+  #     - bias-hardening
+  #     - profile-hardening
+  #     - profile-path
+  #     - fskys
+  #   options:
+  #     experiment: 'ACT'
+  #     filter-whiteamplitude: 12
+  #     fgtypes: 'DF_EB0 DF_EB'
+  #     freq: 90
+  #     estimator: MV
+  #   parallel:
+  #     nproc: 1
+  #     threads: 28
+  #     walltime: '00:10:00'
+  #   script: compute_biases.py
+
+  stage_filter_SO_145_TT:
     exec: python
     globals:
       - maps-path
@@ -35,7 +227,7 @@ stages:
       experiment: 'SO'
       filter-whiteamplitude: 6
       fgtypes: 'DF_EB0 DF_EB'
-      freq: 93
+      freq: 145
       estimator: TT
     parallel:
       nproc: 1
@@ -43,7 +235,7 @@ stages:
       walltime: '00:10:00'
     script: compute_biases.py
 
-  stage_filter_SO_93_MV:
+  stage_filter_SO_145_MV:
     exec: python
     globals:
       - maps-path
@@ -59,7 +251,7 @@ stages:
       experiment: 'SO'
       filter-whiteamplitude: 6
       fgtypes: 'DF_EB0 DF_EB'
-      freq: 93
+      freq: 145
       estimator: MV
     parallel:
       nproc: 1
@@ -67,7 +259,7 @@ stages:
       walltime: '00:10:00'
     script: compute_biases.py
 
-  stage_filter_SO_93_MVPOL:
+  stage_filter_SO_145_MVPOL:
     exec: python
     globals:
       - maps-path
@@ -83,7 +275,7 @@ stages:
       experiment: 'SO'
       filter-whiteamplitude: 6
       fgtypes: 'DF_EB0 DF_EB'
-      freq: 93
+      freq: 145
       estimator: MVPOL
     parallel:
       nproc: 1
@@ -91,7 +283,7 @@ stages:
       walltime: '00:10:00'
     script: compute_biases.py
 
-  stage_filter_SO_93_EB:
+  stage_filter_SO_145_EB:
     exec: python
     globals:
       - maps-path
@@ -107,106 +299,10 @@ stages:
       experiment: 'SO'
       filter-whiteamplitude: 6
       fgtypes: 'DF_EB0 DF_EB'
-      freq: 93
+      freq: 145
       estimator: EB
     parallel:
       nproc: 1
       threads: 14
-      walltime: '00:10:00'
-    script: compute_biases.py
-
-  stage_filter_ACT_90_EB:
-    exec: python
-    globals:
-      - maps-path
-      - mlmax
-      - lmin
-      - lmax
-      - filter-whitefwhm
-      - bias-hardening
-      - profile-hardening
-      - profile-path
-      - fskys
-    options:
-      experiment: 'ACT'
-      filter-whiteamplitude: 12
-      fgtypes: 'DF_EB0 DF_EB'
-      freq: 90
-      estimator: EB
-    parallel:
-      nproc: 1
-      threads: 14
-      walltime: '00:10:00'
-    script: compute_biases.py
-
-  stage_filter_ACT_90_MVPOL:
-    exec: python
-    globals:
-      - maps-path
-      - mlmax
-      - lmin
-      - lmax
-      - filter-whitefwhm
-      - bias-hardening
-      - profile-hardening
-      - profile-path
-      - fskys
-    options:
-      experiment: 'ACT'
-      filter-whiteamplitude: 12
-      fgtypes: 'DF_EB0 DF_EB'
-      freq: 90
-      estimator: MVPOL
-    parallel:
-      nproc: 1
-      threads: 14
-      walltime: '00:10:00'
-    script: compute_biases.py
-
-  stage_filter_ACT_90_TT:
-    exec: python
-    globals:
-      - maps-path
-      - mlmax
-      - lmin
-      - lmax
-      - filter-whitefwhm
-      - bias-hardening
-      - profile-hardening
-      - profile-path
-      - fskys
-    options:
-      experiment: 'ACT'
-      filter-whiteamplitude: 12
-      fgtypes: 'DF_EB0 DF_EB'
-      freq: 90
-      estimator: TT
-    parallel:
-      nproc: 1
-      threads: 14
-      walltime: '00:10:00'
-    script: compute_biases.py
-
-  stage_filter_ACT_90_MV:
-    exec: python
-    globals:
-      - maps-path
-      - mlmax
-      - lmin
-      - lmax
-      - filter-whitefwhm
-      - bias-hardening
-      - profile-hardening
-      - profile-path
-      - fskys
-    options:
-      experiment: 'ACT'
-      filter-whiteamplitude: 12
-      fgtypes: 'DF_EB0 DF_EB'
-      freq: 90
-      estimator: MV
-    parallel:
-      nproc: 1
-      threads: 28
       walltime: '00:10:00'
     script: compute_biases.py
