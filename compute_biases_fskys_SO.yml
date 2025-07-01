@@ -41,7 +41,7 @@ stages:
       profile-hardening: True
     parallel:
       nproc: 1
-      threads: 14
+      threads: 30
       walltime: '01:15:00'
     script: compute_biases.py
 
@@ -65,6 +65,6 @@ stages:
       profile-hardening: False
     parallel:
       nproc: 1
-      threads: 14
+      threads: 30
       walltime: '00:45:00'
     script: compute_biases.py

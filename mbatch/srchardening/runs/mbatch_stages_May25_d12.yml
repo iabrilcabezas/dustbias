@@ -1,0 +1,643 @@
+gitcheck_paths:
+- ./
+gitcheck_pkgs:
+- numpy
+- scipy
+globals:
+  est: MVPOL
+  nside: 2048
+  mlmax: 4000
+  filter-whitefwhm: 1.4
+  width_ra: 15 # 35
+  width_dec: 10 # 20
+  nsims-mf: 50
+  lmin: 600
+  lmax: 3000
+  profile-path: /home/ia404/gitreps/so-lenspipe/data/tsz_profile5000.txt
+  
+root_dir: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/
+
+stages:
+
+  # stage_filter_ACT_600:
+  #   exec: python
+  #   globals:
+  #     - mlmax
+  #     - filter-whitefwhm
+  #   options:
+  #     lmin: 600
+  #     lmax: 3000
+  #     filter-whiteamplitude: 12
+  #     exp: ACT
+  #   parallel:
+  #     nproc: 1
+  #     threads: 7
+  #     walltime: '00:05:00'
+  #   script: stage_compute_filters.py
+
+  # stage_filter_SO_600:
+  #   exec: python
+  #   globals:
+  #     - mlmax
+  #     - filter-whitefwhm
+  #   options:
+  #     lmin: 600
+  #     lmax: 3000
+  #     filter-whiteamplitude: 6
+  #     exp: SO
+  #   parallel:
+  #     nproc: 1
+  #     threads: 7
+  #     walltime: '00:05:00'
+  #   script: stage_compute_filters.py
+
+  stage_local_masks_ACT_GAL060:
+    exec: python
+    globals:
+      - width_ra
+      - width_dec
+    options:
+      skyfrac: GAL060
+      exp: ACT
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:15:00'
+    script: generate_local_masks.py
+
+  stage_local_masks_SO_GAL070:
+    exec: python
+    globals:
+      - width_ra
+      - width_dec
+    options:
+      skyfrac: GAL070
+      exp: SO
+    parallel:
+      nproc: 1
+      threads: 7
+      walltime: '00:15:00'
+    script: generate_local_masks.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 0
+      patch-end: 12
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '15:10:00'
+    script: patches_reconstruction.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n1:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 13
+      patch-end: 26
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+  
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n2:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 27
+      patch-end: 40
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n3:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 41
+      patch-end: 54
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n4:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 55
+      patch-end: 68
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n5:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 69
+      patch-end: 82
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n6:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 83
+      patch-end: 96
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+  stage_auto_mf_d12_90_GAL060_ACT_600_3000_n7:
+    exec: python
+    globals:
+      - est
+      - filter-whitefwhm
+      - mlmax
+      - nsims-mf
+      - width_ra
+      - width_dec
+      - profile-path
+    options:
+      filter-whiteamplitude: 12
+      experiment: ACT
+      maps-path: /rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/rawmaps_250103/ # ACT
+      fg-type: d12
+      lmax: 3000
+      lmin: 600
+      skyfrac: GAL060
+      freq: 90
+      patch-start: 97
+      patch-end: 110
+    parallel:
+      nproc: 1
+      threads: 12
+      walltime: '16:10:00'
+    script: patches_reconstruction.py
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n1:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 13
+  #     patch-end: 26
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '15:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n2:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 27
+  #     patch-end: 40
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '15:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n3:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 50
+  #     patch-end: 54
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '06:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+    
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n4:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 55
+  #     patch-end: 59
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '06:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n5:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 78
+  #     patch-end: 82
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '06:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n6:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 83
+  #     patch-end: 96
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '15:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+
+
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000_n7:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #     patch-start: 97
+  #     patch-end: 110
+  #   parallel:
+  #     nproc: 1
+  #     threads: 12
+  #     walltime: '15:10:00'
+  #   script: stage_gauss_sims_measure_auto_with_mf.py
+  
+  # stage_auto_mf_d12_90_GAL060_ACT_600_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d12
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d9_90_GAL080_ACT_600_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d9
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL080
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '06:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_DF_90_GAL060_ACT_600_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: DF
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_van_90_GAL060_ACT_600_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: van
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d10_90_GAL060_ACT_600_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d10
+  #     lmax: 3000
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d9_90_GAL060_ACT_100_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d9
+  #     lmax: 3000
+  #     lmin: 100
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d9_90_GAL060_ACT_10_3000:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d9
+  #     lmax: 3000
+  #     lmin: 10
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
+
+  # stage_auto_mf_d9_90_GAL060_ACT_600_3500:
+  #   exec: python
+  #   globals:
+  #     - est
+  #     - filter-whitefwhm
+  #     - mlmax
+  #     - nsims-mf
+  #     - width_ra
+  #     - width_dec
+  #   options:
+  #     filter-whiteamplitude: 12
+  #     dust-type: d9
+  #     lmax: 3500
+  #     lmin: 600
+  #     skyfrac: GAL060
+  #     dust-freq: 90
+  #   parallel:
+  #     nproc: 8
+  #     threads: 14
+  #     walltime: '05:10:00'
+  #   script: mbatch/local_dustbias/stage_gauss_sims_measure_auto_with_mf.py
