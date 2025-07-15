@@ -253,6 +253,8 @@ def compute_biases(args, mask, fgkey, alm=False, fsky=None, wcs=None, ilc_type=N
 
     # Compute the 4-point function of the filtered alms
     foreground_4pt = qfunc(f_alms , f_alms)
+    print(foreground_4pt.shape)
+    hp.write_alm(output_path + '../kappa_maps/' + tag_run + f'_{fgkey}_{fsky}.fits' , foreground_4pt[0], overwrite=True)
     # # Compute the power spectrum of the 4-point function, [0] for grad
     cls_4pt = cs.alm2cl(foreground_4pt[0]) / w_n(mask, 4)
 
@@ -290,6 +292,9 @@ Noise = compute_for_filters(args)[3]
 
 qfunc = get_qfunc_forqe(args)
 
+tag_fgtypes = '_'.join(args.fgtypes)
+tag_run = f'{args.exp}_{f"ilc_{args.ilc_type}" if args.ilc else args.freq}_{args.est1}_bh{args.bh}_ph{args.ph}_{args.mlmax}_{args.lmin}_{args.lmax}'
+
 raw4pt = {}
 for fsky in args.fskys:
     for fg_type in args.fgtypes:
@@ -300,8 +305,5 @@ for fsky in args.fskys:
             key = f'{args.freq}_{fg_type}'
         raw4pt[f'{key}_{fsky}'] = compute_biases(args, masks[fsky], key, alm=args.ilc, fsky=fsky, wcs=wcs_tag, ilc_type=args.ilc_type)
 
-tag_fgtypes = '_'.join(args.fgtypes)
-tag_run = f'{args.exp}_{f"ilc_{args.ilc_type}" if args.ilc else args.freq}_{args.est1}_bh{args.bh}_ph{args.ph}_{args.mlmax}_{args.lmin}_{args.lmax}'
-
-with open(output_path + f'raw4pts_{tag_run}_{tag_fgtypes}_{"_".join(args.fskys)}.pkl', 'wb') as f:
-    pickle.dump(raw4pt, f)
+# with open(output_path + f'raw4pts_{tag_run}_{tag_fgtypes}_{"_".join(args.fskys)}.pkl', 'wb') as f:
+#     pickle.dump(raw4pt, f)
