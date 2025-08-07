@@ -1,0 +1,289 @@
+import os
+import healpy as hp
+from healpy.rotator import Rotator
+import numpy as np
+import pysm3
+import pysm3.units as u
+from solenspipe import get_qfunc
+from falafel import utils as futils
+from falafel import qe
+from orphics import stats
+from pixell import curvedsky as cs
+
+EST_NORM_LIST = ['TT', 'TE', 'TB', 'EB', 'EE', 'MV', 'MVPOL']
+FG_PATH_DICT = {'dust_van': '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/vans_d1_SOS4_090_tophat_map_2048',
+                'dust_DF':  '/rds/project/dirac_vol5/rds-dirac-dp002/ia404/fgs/dust_sims/DustFilaments_TQU_NS2048_Nfil180p5M_LR71Normalization_95p0GHz'}
+FSKYS = ['GAL070', 'GAL060', 'GAL040']
+DUST_TYPES = ['gauss', 'd9', 'd10', 'd12', 'van', 'DF']
+
+def bandedcls(cl,_bin_edges):
+    ls=np.arange(cl.size)
+    binner = stats.bin1D(_bin_edges)
+    cents,bls = binner.bin(ls,cl)
+    return cents,bls
+
+def get_ell_arrays(lmax):
+
+    '''
+    defines ell array and ell factors
+    '''
+
+    ell_array = np.arange(lmax + 1)
+    ell_factor2 = (ell_array * (ell_array + 1.))**2 / (2. * np.pi )
+
+    return ell_array, ell_factor2
+
+def get_dust_name(args):
+
+    return f'dust_{args.dust_type}_muK_{args.dust_freq:.0f}GHz_mask_{args.skyfrac}_fejer1'
+
+def get_filter_name(args):
+
+    return f'white_{args.filter_whiteamplitude}_{args.filter_whitefwhm}'
+
+def get_auto_name_old(args):
+
+    return f'phi_{args.est}_{get_dust_name(args)}_{get_filter_name(args)}_{get_name_ellrange(args)}'
+
+def get_name_ellrange(args):
+    return f'lmin{args.lmin}_lmax{args.lmax}'
+
+def get_norm_name(args):
+    ell_range = get_name_ellrange(args)
+    filter_label = get_filter_name(args)
+    return f'Als_{filter_label}_{ell_range}.npy'
+
+def get_noise_dict_name(args):
+
+    filter_label = get_filter_name(args)
+    return f'noise_dict_{filter_label}.npy'
+
+def get_name_fitparams():
+    return 'dust_fit_params.npy'
+
+def get_pl_tag(args):
+
+    return f'{np.abs(args.tilt):.2f}_{args.amplitude:.1f}'
+
+def get_dust_2pt_name(args, sim=None, fsky=None):
+
+    tag = get_pl_tag(args)
+
+    if sim is not None:
+        tag = f'{tag}_{sim}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_2pt_{tag}.txt'
+
+def get_gauss_dust_map_name(args, sim, fsky=None):
+    
+    tag = f'{args.nside}_{get_pl_tag(args)}_{sim}'
+
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_gauss_map_{tag}.fits'
+
+def get_dust_map_name(args, sim, fsky=None):
+    
+    tag = f'{args.dust_type}_{args.mlmax}_{sim}'
+
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+
+    return f'dust_map_{tag}.fits'
+
+def get_mf_name(args, pl_tag=True):
+
+    run_tag = get_name_run(args, pl_tag=pl_tag)
+    tag = f'{run_tag}_{args.sims_start}_{args.sims_end}_{args.skyfrac}'
+
+    return f'mf_grad_{tag}.fits', f'mf_curl_{tag}.fits'
+
+def get_name_run(args, pl_tag=True):
+
+    filter_tag = get_filter_name(args)
+    ell_tag = get_name_ellrange(args)
+
+    if pl_tag:
+        pl_tag = get_pl_tag(args)
+        return f'{args.est}_{args.dust_type}_{pl_tag}_{filter_tag}_{ell_tag}'
+
+    return f'{args.est}_{args.dust_type}_{filter_tag}_{ell_tag}'
+
+
+def get_auto_name(args, pl_tag=True, mf=False, tag=None):
+
+    run_tag = get_name_run(args, pl_tag=pl_tag)
+
+    if tag is not None:
+        run_tag = f'{run_tag}_{tag}'
+
+    if not mf:
+        return f'phi_{run_tag}_nomf.txt'
+        
+    return f'phi_{run_tag}.txt'
+
+# def get_dustfgtype_2pt_name(dust_type, amplitude, tilt, sim_id):
+#     return f'cl_2pt_{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}.txt'
+
+# def get_dustfgtype_map_name(dust_type, amplitude, tilt, sim_id, fsky=None):
+#     tag = f'{dust_type}_{np.abs(tilt):.2f}_{amplitude:.1f}_{sim_id}'
+#     if fsky is not None:
+#         tag = f'{tag}_{fsky}'
+#     return f'map_{tag}.fits'
+
+def get_scaled_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_scaled_{tag}.fits'
+
+def get_2pt_scaled_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_scaled_2pt_{tag}.txt'
+
+def get_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_{tag}.fits'
+
+def get_2pt_map_name(dust_type, sim_id, fsky=None):
+    tag = f'{dust_type}_{sim_id}'
+    if fsky is not None:
+        tag = f'{tag}_{fsky}'
+    return f'map_car_2pt_{tag}.txt'
+
+def get_N0_TT_name(args, pl_tag=True, tag=None):
+    run_tag = get_name_run(args, pl_tag=pl_tag)
+    if tag:
+        run_tag = f'{run_tag}_{tag}'
+    return f'N0_grad_{run_tag}.txt'
+
+def get_nalms(lmax, mmax = None):
+
+    '''
+    Calculate number of alms given (ell max, m max) [healpy format]
+    '''
+
+    if mmax is None:
+        ainfo = cs.alm_info(lmax)
+    else:
+        ainfo = cs.alm_info(lmax = lmax, mmax = mmax)
+        
+    return ainfo.nelem
+
+def hp_rotate(map_hp, coord):
+    """Rotate healpix map between coordinate systems
+
+    :param map_hp: A healpix map in RING ordering
+    :param coord: A len(2) list of either 'G', 'C', 'E'
+    Galactic, equatorial, ecliptic, eg ['G', 'C'] converts
+    galactic to equatorial coordinates
+    :returns: A rotated healpix map
+    """
+    if map_hp is None:
+        return None
+    if coord[0] == coord[1]:
+        return map_hp
+    rotator_func = Rotator(coord=coord)
+    new_map = rotator_func.rotate_map_pixel(map_hp)
+    return new_map
+
+def get_pysm_model_muKcmb_GAL(dust_subtype, nside=2048, freq_GHz=95):
+    """
+    Get a dust map in uK_CMB at a given frequency and nside, in Equatorial coordinates
+
+    :param dust_subtype: The PySM dust model to use, e.g. 'd1', 'd2', 'd3'
+    :param nside: The nside of the output map
+    :param freq_GHz: The frequency of the output map in GHz
+    :returns: A numpy array (T, Q, U) of the dust map in uK_CMB
+    """
+    # output frequency
+    freq_out = freq_GHz * u.GHz 
+    # sky map
+    sky = pysm3.Sky(nside = nside, preset_strings = [dust_subtype])
+    # at given frequency
+    dustmap = sky.get_emission(freq_out)
+    # convert to muK_CMB units
+    dustmap_muKcmb = dustmap.to(u.uK_CMB, equivalencies=u.cmb_equivalencies(freq_out))
+    # return map (I, Q, U) in Galactic coordinates
+    return dustmap_muKcmb.value
+
+def get_px_frommask(args):
+    '''
+    initializes pixelization object from mask information
+    mask: str
+        path to mask
+    '''
+
+    px = qe.pixelization(shape=args.shape,wcs=args.wcs)
+    return px
+
+def get_qfunc_forqe(args):
+
+    '''
+    Obtains q_func for cross split estimator
+
+    Geometry is read from mask
+    Responses are computed theoretically (lensed power spectra -- Lewis+ 2011)
+    Normalization is read from stage_norm stage
+
+    args.norm_dir: path
+        path to normalization filters
+    args.mlmax: int
+        maximum ell to do calculation (resolution)
+    args.lmin, args.lmax: int
+        minimum/maximum ell for analysis
+    args.est1: estimator
+        one of TT,TE,EE,EB,TB,MV,MVPOL
+    args.bh: bool
+        Option to include bias hardening
+    args.ph: bool
+        Option to include profile hardening within bias hardening
+    args.config_name: str
+        sofind datamodel
+    args.mask_type: str
+        lensing masks type (wide_v4_20220316, wide_v3_20220316, deep_v3)
+    args.mask_skyfrac: str
+        sky fraction of mask (GAL040, GAL060, GAL070)
+    args.mask_apodfact: str
+        apodization of mask (3dg, None)
+
+    Returns
+    qfunc(X, Y), corresponding to args.est1 
+    '''
+
+    px = get_px_frommask(args)
+
+    # CMB cls for response and total cls (includes noise) - select only ucls
+    ucls = futils.get_theory_dicts(lmax=args.mlmax, grad=True)[0]
+
+    filter_label = get_filter_name(args)
+    Als = np.load(f'{args.norm_dir}/Als_{filter_label}_lmin{args.lmin}_lmax{args.lmax}.npy',allow_pickle='TRUE').item()
+
+    qfunc = get_qfunc(px, ucls, args.mlmax, args.est, Al1=Als[args.est], est2=None, Al2=None, R12=None)
+
+    return qfunc
+
+
+def read_meanfield(args):
+
+    nalms = get_nalms(args.mlmax)
+    run_tag = get_name_run(args, pl_tag=False)
+
+    mf_data = {name: np.zeros(nalms, dtype=np.complex128) for name in ['mf_grad_set0', 'mf_curl_set0', 'mf_grad_set1', 'mf_curl_set1']}
+
+    for mfset in [0,1]:
+        path = f'{args.output_dir}/../stage_mf_{args.dust_type}_set{mfset}_{args.skyfrac}/'
+        files = os.listdir(path)
+
+        for comp in ['grad', 'curl']:
+            mfname = [file for file in files if file.startswith(f'mf_{comp}_{run_tag}')][0]
+            mf_data[f'mf_{comp}_set{mfset}'] = hp.read_alm(path + mfname)
+
+    return mf_data
